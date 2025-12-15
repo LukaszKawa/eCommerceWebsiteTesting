@@ -1,0 +1,13 @@
+{
+  "name": "ecommercewebsitetesting",
+  "version": "1.0.0",
+  "description": "validate key e-commerce flows using Typescript and Playwright",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.2"
+  }
+}
