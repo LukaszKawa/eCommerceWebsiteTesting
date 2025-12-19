@@ -4,6 +4,10 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Cart & Checkout', () => {
+  test.beforeEach(async ({ homePage }) => {
+    await homePage.goto();
+  });
+
   test('Checkout - Complete purchase flow', async ({
     page,
     homePage,
@@ -12,18 +16,17 @@ test.describe('Cart & Checkout', () => {
     checkoutPage,
   }) => {
     // 1. Add product to cart
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Open cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     const itemsInCart = await cartPage.getCartItemCount();
     expect(itemsInCart).toBeGreaterThan(0);
@@ -78,7 +81,7 @@ test.describe('Cart & Checkout', () => {
 
     // 9. Verify cart is cleared
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     const itemsAfterPurchase = await cartPage.getCartItemCount();
     expect(itemsAfterPurchase).toBe(0);
   });
@@ -91,18 +94,17 @@ test.describe('Cart & Checkout', () => {
     checkoutPage,
   }) => {
     // 1. Add product
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Open cart and place order
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
     await cartPage.clickPlaceOrder();
     await page.waitForTimeout(500);
 
@@ -132,18 +134,17 @@ test.describe('Cart & Checkout', () => {
     checkoutPage,
   }) => {
     // 1. Add product
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Open cart and checkout
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
     await cartPage.clickPlaceOrder();
     await page.waitForTimeout(500);
 

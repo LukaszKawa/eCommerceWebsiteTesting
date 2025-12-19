@@ -13,22 +13,24 @@ export class AuthPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.signupModal = page.locator('#signupModal');
-    this.loginModal = page.locator('#loginModal');
-    this.signupUsernameInput = page.locator('#sign-username');
-    this.signupPasswordInput = page.locator('#sign-password');
-    this.signupSubmitBtn = this.signupModal.locator('button:text("Sign up")');
-    this.loginUsernameInput = page.locator('#loginusername');
-    this.loginPasswordInput = page.locator('#loginpassword');
-    this.loginSubmitBtn = this.loginModal.locator('button:text("Log in")');
+    this.signupModal = page.locator('div[id="signupModal"]');
+    this.loginModal = page.locator('div[id="loginModal"]');
+    this.signupUsernameInput = page.locator('input[id="sign-username"]');
+    this.signupPasswordInput = page.locator('input[id="sign-password"]');
+    this.signupSubmitBtn = page.getByRole('button', { name: 'Sign up' }).first();
+    this.loginUsernameInput = page.locator('input[id="loginusername"]');
+    this.loginPasswordInput = page.locator('input[id="loginpassword"]');
+    this.loginSubmitBtn = page.getByRole('button', { name: 'Log in' });
   }
 
   async isSignupModalVisible(): Promise<boolean> {
-    return this.signupModal.isVisible().catch(() => false);
+    const dialog = this.page.getByRole('dialog', { name: 'Sign up' });
+    return dialog.isVisible().catch(() => false);
   }
 
   async isLoginModalVisible(): Promise<boolean> {
-    return this.loginModal.isVisible().catch(() => false);
+    const dialog = this.page.getByRole('dialog', { name: 'Log in' });
+    return dialog.isVisible().catch(() => false);
   }
 
   async fillSignupForm(username: string, password: string) {

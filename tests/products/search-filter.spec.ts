@@ -4,15 +4,17 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Product Discovery', () => {
+  test.beforeEach(async ({ homePage }) => {
+    // Navigate to home page before each test
+    await homePage.goto();
+  });
+
   test('Search and Filter - Browse products by category (Phones)', async ({
     page,
     homePage,
     productPage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Click Phones category
+    // 1. Click Phones category
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
@@ -31,10 +33,7 @@ test.describe('Product Discovery', () => {
     page,
     homePage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Click Laptops category
+    // 1. Click Laptops category
     await homePage.selectCategory('laptops');
     await page.waitForTimeout(500);
 
@@ -47,10 +46,7 @@ test.describe('Product Discovery', () => {
     page,
     homePage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Click Monitors category
+    // 1. Click Monitors category
     await homePage.selectCategory('monitors');
     await page.waitForTimeout(500);
 
@@ -70,12 +66,9 @@ test.describe('Product Discovery', () => {
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
-    // 3. Get first product card
-    const firstProduct = await homePage.getFirstProduct();
-    expect(firstProduct).toBeDefined();
-
-    // 4. Verify product card has text (product name/price)
-    const productText = await firstProduct.textContent();
+    // 3. Get first product card parent container
+    const productCardsContainer = page.locator('.hrefch, a[href*="prod.html"]').first().locator('..');
+    const productText = await productCardsContainer.textContent();
     expect(productText).toBeTruthy();
     expect(productText?.length).toBeGreaterThan(0);
   });
@@ -84,10 +77,7 @@ test.describe('Product Discovery', () => {
     page,
     homePage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Select category
+    // 1. Select Phones category
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 

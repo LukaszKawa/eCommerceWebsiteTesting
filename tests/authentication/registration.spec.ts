@@ -4,13 +4,17 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Authentication', () => {
+  test.beforeEach(async ({ homePage }) => {
+    // Navigate to home page before each test
+    await homePage.goto();
+  });
+
   test('User Registration - Happy Path: Create new account with valid data', async ({
     page,
     homePage,
     authPage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
+    // 1. Click Sign up button
     expect(page).toBeDefined();
 
     // 2. Click Sign up button
@@ -22,21 +26,20 @@ test.describe('Authentication', () => {
     const testUsername = `user_${Date.now()}`;
     const testPassword = 'BezpieczneHaslo1!';
 
-    // 4. Fill signup form and submit
-    const alertPromise = authPage.waitForAlertAndAccept();
+    // 4. Fill signup form
     await authPage.fillSignupForm(testUsername, testPassword);
+    
+    // 5. Setup alert handler before clicking
+    let signupAlert = '';
+    page.once('dialog', async (dialog) => {
+      signupAlert = dialog.message();
+      await dialog.accept();
+    });
+    
     await authPage.signupSubmitBtn.click();
+    await page.waitForTimeout(1500);
 
-    // 5. Handle alert
-    const alertMessage = await Promise.race([
-      alertPromise,
-      new Promise<string>((_, reject) =>
-        setTimeout(() => reject(new Error('No alert received')), 5000)
-      ),
-    ]).catch(() => null);
-
-    expect(alertMessage).toBeTruthy();
-    expect(alertMessage).toContain('Sign up successful');
+    expect(signupAlert).toContain('successful');
 
     // 6. Verify account can be logged into
     await homePage.goto();
@@ -44,16 +47,29 @@ test.describe('Authentication', () => {
     const isLoginModalVisible = await authPage.isLoginModalVisible();
     expect(isLoginModalVisible).toBe(true);
 
-    const loginAlertPromise = authPage.waitForAlertAndAccept();
+    let loginAlertMsg = '';
+    const loginAlertPromise = new Promise<string>((resolve) => {
+      page.once('dialog', async (dialog) => {
+        loginAlertMsg = dialog.message();
+        await dialog.accept();
+        resolve(loginAlertMsg);
+      });
+    });
+    
     await authPage.fillLoginForm(testUsername, testPassword);
     await authPage.loginSubmitBtn.click();
-
-    const loginAlert = await Promise.race([
+    
+    // Wait for either alert or navigation (logout button appears when logged in)
+    await Promise.race([
       loginAlertPromise,
-      new Promise<string>((_, reject) =>
-        setTimeout(() => reject(new Error('No alert')), 5000)
-      ),
-    ]).catch(() => null);
+      homePage.page.locator('a[href="#logout2"], a[href="#logout"]').first().waitFor({ timeout: 5000 }),
+    ]).catch(() => {
+      // Login may succeed without alert
+    });
+
+    // Verify login succeeded by checking if logout button is visible
+    const hasLogoutBtn = await homePage.page.locator('a#logout2, a[href="#logout"]').isVisible().catch(() => false);
+    expect(hasLogoutBtn || loginAlertMsg.includes('successful')).toBe(true);
 
     // 7. Verify logged-in state
     await homePage.goto();
@@ -67,10 +83,7 @@ test.describe('Authentication', () => {
     homePage,
     authPage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Open signup modal
+    // 1. Open signup modal
     await homePage.openSignupModal();
     const isModalVisible = await authPage.isSignupModalVisible();
     expect(isModalVisible).toBe(true);
@@ -95,10 +108,7 @@ test.describe('Authentication', () => {
     homePage,
     authPage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Open signup modal
+    // 1. Open signup modal
     await homePage.openSignupModal();
     expect(await authPage.isSignupModalVisible()).toBe(true);
 

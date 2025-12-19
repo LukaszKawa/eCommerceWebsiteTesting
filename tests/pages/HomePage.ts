@@ -15,16 +15,16 @@ export class HomePage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.signupBtn = page.locator('#signin2');
-    this.loginBtn = page.locator('#login2');
-    this.logoutBtn = page.locator('#logout2');
+    this.signupBtn = page.getByRole('link', { name: 'Sign up' });
+    this.loginBtn = page.getByRole('link', { name: 'Log in' });
+    this.logoutBtn = page.locator('a#logout2');
     this.usernameDisplay = page.locator('#nameofuser');
-    this.cartLink = page.locator('a[href="#cart"]');
-    this.phonesCategoryBtn = page.locator('a:text("Phones")').first();
-    this.laptopsCategoryBtn = page.locator('a:text("Laptops")').first();
-    this.monitorsCategoryBtn = page.locator('a:text("Monitors")').first();
-    this.productCards = page.locator('.hrefch');
-    this.nextPageBtn = page.locator('button:text("Next")');
+    this.cartLink = page.locator('a[href="cart.html"]');
+    this.phonesCategoryBtn = page.locator('a').filter({ hasText: 'Phones' }).first();
+    this.laptopsCategoryBtn = page.locator('a').filter({ hasText: 'Laptops' }).first();
+    this.monitorsCategoryBtn = page.locator('a').filter({ hasText: 'Monitors' }).first();
+    this.productCards = page.locator('.hrefch, a[href*="prod.html"]');
+    this.nextPageBtn = page.locator('button').filter({ hasText: 'Next' });
   }
 
   async openSignupModal() {
@@ -50,7 +50,7 @@ export class HomePage extends BasePage {
 
   async openCart() {
     await this.cartLink.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(1500);
   }
 
   async selectCategory(category: 'phones' | 'laptops' | 'monitors') {

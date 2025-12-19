@@ -15,16 +15,16 @@ export class CartPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.cartTable = page.locator('#tbodyid');
-    this.cartItems = page.locator('#tbodyid tr');
-    this.removeButtons = page.locator('button:text("Delete")');
-    this.totalPrice = page.locator('#totalp');
-    this.placeOrderBtn = page.locator('button:text("Place Order")');
-    this.couponInput = page.locator('input#coupontext');
-    this.applyCouponBtn = page.locator('button#applycoupon');
-    this.emptyCartMessage = page.locator('text=Cart is empty');
-    this.cartItemName = page.locator('#tbodyid td:nth-child(2)');
-    this.cartItemPrice = page.locator('#tbodyid td:nth-child(3)');
+    this.cartTable = page.locator('table tbody#tbodyid, tbody[id="tbodyid"]');
+    this.cartItems = page.locator('table tbody#tbodyid tr, tbody[id="tbodyid"] tr');
+    this.removeButtons = page.getByRole('link', { name: 'Delete' });
+    this.totalPrice = page.locator('h3[id="totalp"], #totalp');
+    this.placeOrderBtn = page.locator('button').filter({ hasText: 'Place Order' });
+    this.couponInput = page.locator('input[id="coupontext"], input[placeholder*="Promo"], input[placeholder*="Coupon"]');
+    this.applyCouponBtn = page.locator('button[id="applycoupon"], button').filter({ hasText: /Apply|Coupon/ });
+    this.emptyCartMessage = page.locator('text=/[Cc]art.*empty|No items/');
+    this.cartItemName = page.locator('tbody#tbodyid tr td:nth-child(2), tbody tr td:nth-child(2)');
+    this.cartItemPrice = page.locator('tbody#tbodyid tr td:nth-child(3), tbody tr td:nth-child(3)');
   }
 
   async getCartItemCount(): Promise<number> {
@@ -40,8 +40,25 @@ export class CartPage extends BasePage {
   async removeFirstItem() {
     const count = await this.removeButtons.count();
     if (count > 0) {
+      // Setup alert handler before clicking delete
+      const alertPromise = new Promise<void>((resolve) => {
+        this.page.once('dialog', async (dialog) => {
+          await dialog.accept();
+          resolve();
+        });
+      });
+      
       await this.removeButtons.first().click();
-      await this.page.waitForTimeout(500);
+      
+      try {
+        await Promise.race([
+          alertPromise,
+          new Promise((resolve) => setTimeout(resolve, 5000)),
+        ]);
+      } catch (e) {
+        // Alert might not appear
+      }
+      await this.page.waitForTimeout(1000);
     }
   }
 

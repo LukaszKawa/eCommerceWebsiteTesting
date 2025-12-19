@@ -12,13 +12,13 @@ export class ProductPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.productTitle = page.locator('h2');
-    this.productPrice = page.locator('.price-container h3');
-    this.productDescription = page.locator('.tab-content p');
-    this.productImage = page.locator('.product-image img').first();
-    this.addToCartBtn = page.locator('a.btn-default:text("Add to cart")');
-    this.backBtn = page.locator('.row button:text("Back")').first();
-    this.reviewsSection = page.locator('#reviews');
+    this.productTitle = page.locator('h2').first();
+    this.productPrice = page.locator('h3').first();
+    this.productDescription = page.locator('.tab-content').locator('p').first();
+    this.productImage = page.locator('.product-image img, img[alt], img[src*="img"]').first();
+    this.addToCartBtn = page.getByRole('link', { name: 'Add to cart' });
+    this.backBtn = page.locator('button').filter({ hasText: 'Back' }).first();
+    this.reviewsSection = page.locator('#reviews, .reviews');
   }
 
   async getProductTitle(): Promise<string | null> {

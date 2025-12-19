@@ -4,6 +4,11 @@
 import { authenticatedTest, test, expect } from '../fixtures';
 
 test.describe('Authentication', () => {
+  test.beforeEach(async ({ homePage }) => {
+    // Navigate to home page before each test
+    await homePage.goto();
+  });
+
   test('Login and Session - Happy Path: Successful login with valid credentials', async ({
     page,
     homePage,
@@ -16,7 +21,6 @@ test.describe('Authentication', () => {
     };
 
     // Register user first
-    await homePage.goto();
     await homePage.openSignupModal();
     const signupAlert = authPage.waitForAlertAndAccept();
     await authPage.fillSignupForm(testUser.username, testUser.password);
@@ -64,10 +68,7 @@ test.describe('Authentication', () => {
     homePage,
     authPage,
   }) => {
-    // 1. Navigate to home
-    await homePage.goto();
-
-    // 2. Open login modal
+    // 1. Open login modal
     await homePage.openLoginModal();
     expect(await authPage.isLoginModalVisible()).toBe(true);
 
@@ -107,7 +108,6 @@ test.describe('Authentication', () => {
     };
 
     // Register
-    await homePage.goto();
     await homePage.openSignupModal();
     const signupPromise = authPage.waitForAlertAndAccept();
     await authPage.fillSignupForm(testUser.username, testUser.password);

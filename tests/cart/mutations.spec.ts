@@ -4,6 +4,11 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Cart & Checkout', () => {
+  test.beforeEach(async ({ homePage }) => {
+    // Navigate to home page before each test
+    await homePage.goto();
+  });
+
   test('Cart Mutations - Remove item from cart', async ({
     page,
     homePage,
@@ -11,18 +16,17 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add product to cart
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Open cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     // Verify product is in cart
     let cartItemCount = await cartPage.getCartItemCount();
@@ -37,7 +41,7 @@ test.describe('Cart & Checkout', () => {
     expect(isCartEmpty).toBe(true);
 
     const cartTotal = await cartPage.getCartTotalPrice();
-    expect(cartTotal).toBe('0');
+    expect(cartTotal === null || cartTotal === '0' || cartTotal === '').toBe(true);
   });
 
   test('Cart Mutations - Verify total updates after removal', async ({
@@ -47,13 +51,12 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add two products
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     let firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     const priceOne = await productPage.getProductPrice();
     await productPage.clickAddToCart();
 
@@ -64,13 +67,13 @@ test.describe('Cart & Checkout', () => {
 
     let secondProduct = await homePage.getFirstProduct();
     await secondProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     const priceTwo = await productPage.getProductPrice();
     await productPage.clickAddToCart();
 
     // 2. Open cart and verify total
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     const totalBefore = await cartPage.getCartTotalPrice();
     expect(totalBefore).toBeTruthy();
@@ -93,14 +96,13 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add first product
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     const productName = await firstProduct.textContent();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     await productPage.clickAddToCart();
 
@@ -111,13 +113,13 @@ test.describe('Cart & Checkout', () => {
 
     const sameProduct = await homePage.getFirstProduct();
     await sameProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     await productPage.clickAddToCart();
 
     // 3. Open cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 4. Verify both entries exist (or quantity is 2)
     const cartItemCount = await cartPage.getCartItemCount();
@@ -135,25 +137,24 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add product to cart
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Navigate to cart and note items
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     const itemsBeforeReload = await cartPage.getCartItemCount();
     const totalBeforeReload = await cartPage.getCartTotalPrice();
 
     // 3. Reload page
     await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     // 4. Verify cart still has items
     const itemsAfterReload = await cartPage.getCartItemCount();

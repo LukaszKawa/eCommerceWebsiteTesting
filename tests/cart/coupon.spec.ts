@@ -4,9 +4,12 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Cart & Checkout', () => {
-  test('Coupon - Check if coupon field exists', async ({ homePage, cartPage }) => {
-    // 1. Open home page
+  test.beforeEach(async ({ homePage }) => {
     await homePage.goto();
+  });
+
+  test('Coupon - Check if coupon field exists', async ({ page, homePage, cartPage }) => {
+    // 1. Open home page
 
     // 2. Add a product to cart
     await homePage.selectCategory('phones');
@@ -14,11 +17,11 @@ test.describe('Cart & Checkout', () => {
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await homePage.page.waitForLoadState('networkidle');
+    await homePage.page.waitForTimeout(1500);
 
     // Add to cart
     const productPage = homePage.page;
-    const addBtn = productPage.locator('a.btn-default:text("Add to cart")');
+    const addBtn = productPage.getByRole('link', { name: 'Add to cart' });
     await addBtn.click();
 
     // Handle alert
@@ -35,7 +38,7 @@ test.describe('Cart & Checkout', () => {
 
     // 3. Open cart
     await homePage.openCart();
-    await homePage.page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     // 4. Check if coupon field exists
     const hasCouponField = await cartPage.hasCouponField();
@@ -53,18 +56,17 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add product to cart
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Open cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     // 3. Check if coupon field exists
     const hasCoupon = await cartPage.hasCouponField();
@@ -100,18 +102,17 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add product to cart
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 2. Open cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 
     // 3. Check if coupon feature is available
     const hasCoupon = await cartPage.hasCouponField();

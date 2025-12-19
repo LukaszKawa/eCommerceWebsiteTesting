@@ -15,16 +15,16 @@ export class CheckoutPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.nameInput = page.locator('#name');
-    this.countryInput = page.locator('#country');
-    this.cityInput = page.locator('#city');
-    this.creditCardInput = page.locator('#card');
-    this.monthInput = page.locator('#month');
-    this.yearInput = page.locator('#year');
-    this.purchaseBtn = page.locator('button:text("Purchase")');
-    this.closeModal = page.locator('button:text("OK")').last();
-    this.confirmationText = page.locator('.sweet-alert.showSweetAlert h2');
-    this.orderIdText = page.locator('.sweet-alert.showSweetAlert .lead');
+    this.nameInput = page.locator('input[id="name"]');
+    this.countryInput = page.locator('input[id="country"]');
+    this.cityInput = page.locator('input[id="city"]');
+    this.creditCardInput = page.locator('input[id="card"]');
+    this.monthInput = page.locator('input[id="month"]');
+    this.yearInput = page.locator('input[id="year"]');
+    this.purchaseBtn = page.locator('button').filter({ hasText: 'Purchase' });
+    this.closeModal = page.locator('button').filter({ hasText: 'OK' }).last();
+    this.confirmationText = page.locator('h2').filter({ hasText: /Thank you|success/i });
+    this.orderIdText = page.locator('p').filter({ hasText: /Id:|Order/ }).first();
   }
 
   async isCheckoutModalVisible(): Promise<boolean> {

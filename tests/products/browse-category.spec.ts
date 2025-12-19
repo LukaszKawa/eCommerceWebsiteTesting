@@ -4,22 +4,24 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Product Discovery', () => {
+  test.beforeEach(async ({ homePage }) => {
+    // Navigate to home page before each test
+    await homePage.goto();
+  });
+
   test('Browse Category - Navigate to product details from category', async ({
     page,
     homePage,
     productPage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Select Phones category
+    // 1. Select Phones category
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     // 3. Click first product to open details page
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 4. Verify we're on product details page
     const url = page.url();
@@ -31,15 +33,14 @@ test.describe('Product Discovery', () => {
     homePage,
     productPage,
   }) => {
-    // 1. Open home page and navigate to category
-    await homePage.goto();
+    // 1. Navigate to category and get first product
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     // 2. Click first product
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 3. Verify product page has complete info
     const hasCompleteInfo = await productPage.hasCompleteProductInfo();
@@ -66,14 +67,13 @@ test.describe('Product Discovery', () => {
     productPage,
   }) => {
     // 1. Navigate to product details
-    await homePage.goto();
     await homePage.selectCategory('laptops');
     await page.waitForTimeout(500);
 
     // 2. Click first product
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 3. Verify description exists
     const description = await productPage.getProductDescription();
@@ -86,7 +86,6 @@ test.describe('Product Discovery', () => {
     productPage,
   }) => {
     // 1. Navigate to product details
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
     const initialUrl = page.url();
@@ -94,7 +93,7 @@ test.describe('Product Discovery', () => {
     // 2. Click first product
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 3. Click back button
     const backBtnVisible = await productPage.backBtn.isVisible().catch(() => false);

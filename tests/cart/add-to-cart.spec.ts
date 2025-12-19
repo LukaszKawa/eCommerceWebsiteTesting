@@ -4,16 +4,18 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Cart & Checkout', () => {
+  test.beforeEach(async ({ homePage }) => {
+    // Navigate to home page before each test
+    await homePage.goto();
+  });
+
   test('Add to Cart - Add product from category listing', async ({
     page,
     homePage,
     productPage,
     cartPage,
   }) => {
-    // 1. Open home page
-    await homePage.goto();
-
-    // 2. Select category
+    // 1. Select category
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
@@ -21,7 +23,7 @@ test.describe('Cart & Checkout', () => {
     const firstProduct = await homePage.getFirstProduct();
     const productName = await firstProduct.textContent();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 4. Click Add to Cart button
     const alertMessage = await productPage.clickAddToCart();
@@ -30,7 +32,7 @@ test.describe('Cart & Checkout', () => {
 
     // 5. Navigate to cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 6. Verify product is in cart
     const cartItemCount = await cartPage.getCartItemCount();
@@ -49,14 +51,13 @@ test.describe('Cart & Checkout', () => {
     productPage,
     cartPage,
   }) => {
-    // 1. Open home and add product
-    await homePage.goto();
+    // 1. Add product from category
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     const firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // Get product price from details page
     const productPrice = await productPage.getProductPrice();
@@ -66,7 +67,7 @@ test.describe('Cart & Checkout', () => {
 
     // 2. Navigate to cart
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     // 3. Verify total
     const cartTotal = await cartPage.getCartTotalPrice();
@@ -81,28 +82,27 @@ test.describe('Cart & Checkout', () => {
     cartPage,
   }) => {
     // 1. Add first product
-    await homePage.goto();
     await homePage.selectCategory('phones');
     await page.waitForTimeout(500);
 
     let firstProduct = await homePage.getFirstProduct();
     await firstProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
-    // 2. Go back and add second product
+    // 2. Add second product from different category
     await homePage.goto();
     await homePage.selectCategory('laptops');
     await page.waitForTimeout(500);
 
     let secondProduct = await homePage.getFirstProduct();
     await secondProduct.click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
     await productPage.clickAddToCart();
 
     // 3. Open cart and verify both items
     await homePage.openCart();
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
 
     const cartItemCount = await cartPage.getCartItemCount();
     expect(cartItemCount).toBe(2);
