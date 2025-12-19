@@ -1,0 +1,20 @@
+{
+  "name": "ecommercewebsitetesting",
+  "version": "1.0.0",
+  "description": "validate key e-commerce flows using Typescript and Playwright",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "smoke": "npx playwright test --grep @smoke"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.2",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0",
+    "typescript-eslint": "^8.50.0"
+  }
+}
